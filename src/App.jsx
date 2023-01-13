@@ -1,11 +1,12 @@
 import { Box, Button, Container, FormGroup, List, ListItem, ListItemText, TextField, Typography } from "@mui/material"
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 
 function App() {
 	const [items, setItems] = useState([])
 	const [search, setSearch] = useState('')
 	const inputRef = useRef()
 
+	// Используем useRef чтобы при каждом вводе в инпут у нас не происходил ру-рендер
 
 	const onSubmit = (e) => {
 		e.preventDefault()
@@ -19,9 +20,15 @@ function App() {
 		inputRef.current.value = ''
 	}
 
-	const filteredItems = items.filter(item => {
-		return item.toLowerCase().includes(search.toLowerCase())
-	})
+
+	// Фильтрацию производим на основе состояния поисковой строки, для того, чтобы у нас не перезаписывался state с массивом элементов
+	// useMemo используем чтобы рендер происходил только при изменении одного из указанных состояний
+	
+	const filteredItems = useMemo(() => {
+		return items.filter(item => {
+			return item.toLowerCase().includes(search.toLowerCase())
+		})
+	}, [items, search])
 
 
 	return(
